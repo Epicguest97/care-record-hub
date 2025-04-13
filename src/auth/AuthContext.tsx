@@ -104,8 +104,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return { data: data.session, error };
   };
 
-  const signUp = async (email: string, password: string, firstName: string, lastName: string, role: UserRole) => {
+  const signUp = async (
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string,
+    role: string
+  ) => {
     setLoading(true);
+  
+    const validRoles: UserRole[] = ['admin', 'doctor', 'patient'];
+    const formattedRole = role.toLowerCase();
+  
+    if (!validRoles.includes(formattedRole as UserRole)) {
+      setLoading(false);
+      return {
+        data: null,
+        error: new Error(`Invalid role: "${role}". Must be one of: ${validRoles.join(', ')}`),
+      };
+    }
+  
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -113,13 +131,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         data: {
           first_name: firstName,
           last_name: lastName,
-          role,
-        }
-      }
+          role: formattedRole,
+        },
+      },
     });
+  
     setLoading(false);
     return { data, error };
   };
+  
 
   const signOut = async () => {
     await supabase.auth.signOut();
