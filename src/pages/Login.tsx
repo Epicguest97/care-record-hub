@@ -96,8 +96,13 @@ const Login = () => {
                     type="email" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="m.edwards@example.com" 
+                    placeholder={role === 'admin' ? "admin" : "m.edwards@example.com"} 
                   />
+                  {role === 'admin' && (
+                    <p className="text-xs text-gray-500">
+                      Admin quick access: use "admin" as username and "admin123" as password
+                    </p>
+                  )}
                 </div>
                 
                 <div className="grid gap-2">
@@ -112,6 +117,7 @@ const Login = () => {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    placeholder={role === 'admin' ? "admin123" : ""}
                   />
                 </div>
               </div>

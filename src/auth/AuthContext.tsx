@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -96,6 +95,48 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signIn = async (email: string, password: string) => {
     setLoading(true);
+    
+    // Hardcoded admin credentials check
+    if (email === 'admin' && password === 'admin123') {
+      // Create a mock session and user for the hardcoded admin
+      const mockUser = {
+        id: 'hardcoded-admin-id',
+        email: 'admin@medicare.com',
+        app_metadata: {},
+        user_metadata: {},
+        aud: 'authenticated',
+        created_at: new Date().toISOString()
+      };
+      
+      const mockSession = {
+        access_token: 'mock-access-token',
+        refresh_token: 'mock-refresh-token',
+        expires_in: 3600,
+        expires_at: Math.floor(Date.now() / 1000) + 3600,
+        token_type: 'bearer',
+        user: mockUser
+      } as unknown as Session;
+      
+      // Set the mock user and session
+      setUser(mockUser as User);
+      setSession(mockSession);
+      
+      // Set a hardcoded admin profile
+      const adminProfile: Profile = {
+        id: 'hardcoded-admin-id',
+        first_name: 'Admin',
+        last_name: 'User',
+        role: 'admin'
+      };
+      
+      setProfile(adminProfile);
+      setLoading(false);
+      
+      // Return success response with mock data
+      return { data: mockSession, error: null };
+    }
+    
+    // Regular Supabase authentication for other users
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -142,6 +183,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   
 
   const signOut = async () => {
+    // Check if this is our hardcoded admin
+    if (user?.id === 'hardcoded-admin-id') {
+      // Just clear the local state
+      setUser(null);
+      setSession(null);
+      setProfile(null);
+      navigate('/');
+      return;
+    }
+    
+    // Otherwise use the normal Supabase signOut
     await supabase.auth.signOut();
     navigate('/');
   };
