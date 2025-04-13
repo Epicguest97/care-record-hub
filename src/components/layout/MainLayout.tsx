@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/auth/AuthContext';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -26,6 +27,7 @@ interface MainLayoutProps {
 export const MainLayout = ({ children, userRole }: MainLayoutProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
+  const { profile, signOut } = useAuth();
 
   // Define menu items based on user role
   const getMenuItems = () => {
@@ -35,7 +37,7 @@ export const MainLayout = ({ children, userRole }: MainLayoutProps) => {
 
     const roleSpecificItems = {
       admin: [
-        { title: 'Patients', icon: Users, url: '/admin/patients' },
+        { title: 'Patients', icon: Users, url: '/admin/patients/add' },
         { title: 'Staff', icon: User, url: '/admin/staff' },
         { title: 'Appointments', icon: Calendar, url: '/admin/appointments' },
         { title: 'Billing', icon: DollarSign, url: '/admin/billing' },
@@ -68,6 +70,8 @@ export const MainLayout = ({ children, userRole }: MainLayoutProps) => {
   };
 
   const roleBadge = roleColors[userRole];
+
+  const displayName = profile ? `${profile.first_name} ${profile.last_name}` : 'User';
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -115,25 +119,25 @@ export const MainLayout = ({ children, userRole }: MainLayoutProps) => {
                 <>
                   <div className="flex items-center gap-3">
                     <Avatar className="h-9 w-9">
-                      <AvatarImage alt="User" src="/placeholder.svg" />
-                      <AvatarFallback>{userRole[0].toUpperCase()}</AvatarFallback>
+                      <AvatarImage alt={displayName} src="/placeholder.svg" />
+                      <AvatarFallback>{profile?.first_name?.[0] || userRole[0].toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="text-sm font-medium">John Doe</p>
+                      <p className="text-sm font-medium">{displayName}</p>
                       <p className={cn("text-xs px-1.5 py-0.5 rounded-full inline-flex", roleBadge)}>
                         {userRole}
                       </p>
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon">
+                  <Button variant="ghost" size="icon" onClick={() => signOut()}>
                     <LogOut className="h-5 w-5" />
                   </Button>
                 </>
               )}
               {collapsed && (
                 <Avatar className="h-9 w-9">
-                  <AvatarImage alt="User" src="/placeholder.svg" />
-                  <AvatarFallback>{userRole[0].toUpperCase()}</AvatarFallback>
+                  <AvatarImage alt={displayName} src="/placeholder.svg" />
+                  <AvatarFallback>{profile?.first_name?.[0] || userRole[0].toUpperCase()}</AvatarFallback>
                 </Avatar>
               )}
             </div>
