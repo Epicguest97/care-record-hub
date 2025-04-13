@@ -1,28 +1,14 @@
 
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/auth/AuthContext';
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user, profile, loading } = useAuth();
 
   useEffect(() => {
-    // If still loading, don't redirect
-    if (loading) return;
-
-    // If no user, redirect to login
-    if (!user) {
-      navigate('/');
-      return;
-    }
-
-    // If user is logged in but profile is not loaded yet, wait
-    if (!profile) return;
-
-    // Redirect based on user role
-    navigate(`/${profile.role}/dashboard`);
-  }, [navigate, user, profile, loading]);
+    // Redirect to login page by default
+    navigate('/');
+  }, [navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">

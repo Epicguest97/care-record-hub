@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useNavigate, Link } from 'react-router-dom';
 import { Activity } from 'lucide-react';
 import { useAuth } from '@/auth/AuthContext';
@@ -23,40 +23,6 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Special case for hardcoded admin login
-    if (role === 'admin' && email === 'admin' && password === 'admin123') {
-      try {
-        const { error } = await signIn(email, password);
-        
-        if (error) {
-          toast({
-            variant: "destructive",
-            title: "Login failed",
-            description: error.message,
-          });
-          return;
-        }
-      } catch (error: any) {
-        toast({
-          variant: "destructive",
-          title: "Login error",
-          description: error.message || "An unexpected error occurred",
-        });
-      }
-      return;
-    }
-    
-    // Regular email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      toast({
-        variant: "destructive",
-        title: "Invalid Email",
-        description: "Please enter a valid email address",
-      });
-      return;
-    }
-    
     if (!email || !password) {
       toast({
         variant: "destructive",
@@ -68,17 +34,7 @@ const Login = () => {
     
     setIsSubmitting(true);
     try {
-      const { error } = await signIn(email, password);
-      
-      if (error) {
-        toast({
-          variant: "destructive",
-          title: "Login failed",
-          description: error.message,
-        });
-        return;
-      }
-      
+      await signIn(email, password);
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -174,4 +130,3 @@ const Login = () => {
 };
 
 export default Login;
-
