@@ -23,6 +23,40 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Special case for hardcoded admin login
+    if (role === 'admin' && email === 'admin' && password === 'admin123') {
+      try {
+        const { error } = await signIn(email, password);
+        
+        if (error) {
+          toast({
+            variant: "destructive",
+            title: "Login failed",
+            description: error.message,
+          });
+          return;
+        }
+      } catch (error: any) {
+        toast({
+          variant: "destructive",
+          title: "Login error",
+          description: error.message || "An unexpected error occurred",
+        });
+      }
+      return;
+    }
+    
+    // Regular email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Email",
+        description: "Please enter a valid email address",
+      });
+      return;
+    }
+    
     if (!email || !password) {
       toast({
         variant: "destructive",
@@ -44,8 +78,6 @@ const Login = () => {
         });
         return;
       }
-      
-      // Auth context will handle redirect based on user role after successful login
       
     } catch (error: any) {
       toast({
@@ -96,11 +128,11 @@ const Login = () => {
                     type="email" 
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder={role === 'admin' ? "admin" : "m.edwards@example.com"} 
+                    placeholder={role === 'admin' ? "admin@medicare.com" : "m.edwards@example.com"} 
                   />
                   {role === 'admin' && (
                     <p className="text-xs text-gray-500">
-                      Admin quick access: use "admin" as username and "admin123" as password
+                      Admin quick access: use "admin@medicare.com" as email and "admin123" as password
                     </p>
                   )}
                 </div>
@@ -142,3 +174,4 @@ const Login = () => {
 };
 
 export default Login;
+
