@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./auth/AuthContext";
 import { ProtectedRoute } from "./auth/ProtectedRoute";
+import { MainLayout } from "./components/layout/MainLayout";
 
 // Pages
 import Login from "./pages/Login";
@@ -38,20 +39,18 @@ const App = () => (
             <Route path="/" element={<Login />} />
             <Route path="/register" element={<Register />} />
             
-            {/* Admin Routes */}
+            {/* Protected Routes with Layout */}
             <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/admin/patients/add" element={<PatientRegistration />} />
               <Route path="/admin/billing" element={<Billing />} />
             </Route>
             
-            {/* Doctor Routes */}
             <Route element={<ProtectedRoute allowedRoles={['doctor']} />}>
               <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
               <Route path="/doctor/records" element={<PatientRecords />} />
             </Route>
             
-            {/* Patient Routes */}
             <Route element={<ProtectedRoute allowedRoles={['patient']} />}>
               <Route path="/patient/dashboard" element={<PatientDashboard />} />
             </Route>
